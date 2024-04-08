@@ -1,0 +1,7 @@
+Statistics for Dataset: OGBL-COLLAB
+
+Average(train)=91.737
+SD(train)=4.335
+Average(test)=49.880
+SD(test)=2.367
+
