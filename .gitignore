@@ -48,6 +48,14 @@ data/graphtheoryprop/*.pkl
 #WikiCS
 data/WikiCS/*.json
 
+# Others
+*.out
+*.err
+*.json
+*.csv
+*.sbatch
+*.sh
+
 
 
 scripts/StatisticalResults/cycles.ipynb
