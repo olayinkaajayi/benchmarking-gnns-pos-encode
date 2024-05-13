@@ -20,19 +20,16 @@ def train_epoch(model, optimizer, device, graph, node_feat, edge_feat, train_mas
 
     try:
         pos_enc = graph.ndata['pos_enc'].to(device)
-        if use_NAPE:
-            logits = model.forward(graph, node_feat, edge_feat, pos_enc)
-        else:
-            sign_flip = torch.rand(pos_enc.size(1)).to(device)
-            sign_flip[sign_flip>=0.5] = 1.0; sign_flip[sign_flip<0.5] = -1.0
-            pos_enc = pos_enc * sign_flip.unsqueeze(0)
-            logits = model.forward(graph, node_feat, edge_feat, pos_enc)
+        # if use_NAPE:
+        #     logits = model.forward(graph, node_feat, edge_feat, pos_enc)
+        # else:
+        sign_flip = torch.rand(pos_enc.size(1)).to(device)
+        sign_flip[sign_flip>=0.5] = 1.0; sign_flip[sign_flip<0.5] = -1.0
+        pos_enc = pos_enc * sign_flip.unsqueeze(0)
+        logits = model.forward(graph, node_feat, edge_feat, pos_enc)
     except:
         logits = model(graph, node_feat, edge_feat)
 
-    print(f"HERE 1: {logits[train_mask].shape}")
-    print(f"HERE 2: {labels[train_mask].shape}")
-    exit()
     loss = model.loss(logits[train_mask], labels[train_mask])
     optimizer.zero_grad()
     loss.backward()

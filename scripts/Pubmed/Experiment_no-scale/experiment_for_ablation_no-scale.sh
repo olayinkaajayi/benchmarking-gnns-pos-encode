@@ -11,7 +11,7 @@ code=main_WikiCS_node_classification.py
 home=/dcs/pg20/u2034358/codes/benchmarking-gnns
 config_file="$home/configs/WikiCS_node_classification_MoNet_NAPE-ns_100k.json"
 exp_name="eta"
-# "pos_enc_name": "betaNAPE_WikiCS.pt"
+# "pos_enc_name": "Pubmed_no-scale_NAPE.pt"
 
 function run_experiments {
 
@@ -65,7 +65,7 @@ tmux new -s benchmark_COLLAB_edge_classification -d
 tmux send-keys -t benchmark_COLLAB_edge_classification "cd codes/benchmarking-gnns" C-m
 tmux send-keys -t benchmark_COLLAB_edge_classification "conda activate yinka_env" C-m
 
-etas=(1e3 3e3 5e3 7e3 9e3 1e4 5e4 8e4 10e4 11e4 12e4 5e5)
+etas=(1e3 5e3 1e4 2e4 5e4 10e4 15e4 5e5)
 
 # Run the experiments for each value of eta
 for eta in "${etas[@]}"; do

@@ -55,6 +55,7 @@ data/WikiCS/*.json
 *.csv
 *.sbatch
 *.sh
+*.png
 
 
 

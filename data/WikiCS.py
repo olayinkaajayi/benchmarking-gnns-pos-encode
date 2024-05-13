@@ -14,13 +14,15 @@ from train.NAPE_modules.trans_pos_encode import TT_Pos_Encode
 
 import itertools
 
+root = '/dcs/large/u2034358/'
+
 class WikiCSDataset(torch.utils.data.Dataset):
     """
         Wiki-CS Dataset
         Adapted from
         https://github.com/pmernyei/wiki-cs-dataset/
     """
-    def __init__(self, DATASET_NAME='WikiCS', path="data/WikiCS/"):
+    def __init__(self, DATASET_NAME='WikiCS', path=f"{root}data/WikiCS/"):
         self.name = DATASET_NAME
         self.data = json.load(open(os.path.join(path, 'data.json')))
 
@@ -84,7 +86,7 @@ class WikiCSDataset(torch.utils.data.Dataset):
 
         print("[I] Finished loading after {:.4f}s".format(time.time()-t0))
 
-    def _add_positional_encodings(self, pos_enc_dim, hidden_size=None, pos_enc_name='', use_NAPE=True, scale=110000.0, save_adj=False):
+    def _add_positional_encodings(self, pos_enc_dim, hidden_size=None, pos_enc_name='', use_NAPE=True, scale=1000.0, save_adj=False):
 
         # Graph positional encoding v/ Laplacian eigenvectors
         g = self.g

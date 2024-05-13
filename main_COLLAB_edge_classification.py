@@ -101,9 +101,14 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, save_file_params
             dataset._add_positional_encodings(net_params['pos_enc_dim'],
                                                 net_params['hidden_dim'],
                                                 net_params['pos_enc_name'],
-                                                net_params['use_NAPE'],float(net_params['scale']))#,
-                                                # save_adj=True)
+                                                net_params['use_NAPE'],float(net_params['scale']),
+                                                # save_adj=True,
+                                                use_existing=False)
             print('Time PE:',time.time()-t0)
+            # if not net_params['use_NAPE']:
+            #     # We enforce this only to get the time taken for the Laplacian to be computed
+            #     print('\nTIME HAS BEEN COMPUTED!')
+            #     exit()
 
     graph = dataset.graph
 

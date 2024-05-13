@@ -36,7 +36,7 @@
         "pos_enc": true,
         "pos_enc_dim": 30,
         "pos_enc_name": "checkpoint_scaledNAPE_COLLAB.pt",
-        "use_NAPE": true,
+        "use_NAPE": false,
         "scale": 5e5
     },
 

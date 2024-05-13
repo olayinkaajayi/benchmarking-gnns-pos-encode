@@ -7,9 +7,10 @@ import matplotlib.pyplot as plt
 import torch.nn as nn
 import numpy as np
 import torch.nn.functional as F
+from pathlib import Path
 
 from .NAPE import Position_encode
-root = '/dcs/pg20/u2034358/codes/'
+root = f'{Path.home()}/codes/'
 
 class TT_Pos_Encode(nn.Module):
     """
@@ -32,7 +33,7 @@ class TT_Pos_Encode(nn.Module):
         """This would return the saved position encoding"""
         PE = Position_encode(N=N, d=d)
 
-        PE.load_state_dict(torch.load(root+'node2vec/Saved_models/'+f'd={d}_{self.PE_name}'))
+        PE.load_state_dict(torch.load(root+'NAPE-wt-node2vec/Saved_models/'+f'd={d}_{self.PE_name}'))
         PE.eval()
         Z,_,_,_ = PE(test=True)
         err = 0.0001

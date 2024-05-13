@@ -10,29 +10,46 @@ import numpy as np
 
 from train.NAPE_modules.trans_pos_encode import TT_Pos_Encode
 
-def positional_encoding(g, pos_enc_dim):
+root = '/dcs/large/u2034358/'
+
+def positional_encoding(g, pos_enc_dim, dataset_name, use_existing):
     """
         Graph positional encoding v/ Laplacian eigenvectors
     """
+    if not use_existing:
+        # Laplacian
+        # A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+        A = g.adj().float()
+        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+        # L = sp.eye(g.number_of_nodes()) - N * A * N
+        L = sp.eye(g.number_of_nodes()) - N.multiply(A).multiply(N)
 
-    # Laplacian
-    # A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
-    A = g.adj().float()
-    N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
-    # L = sp.eye(g.number_of_nodes()) - N * A * N
-    L = sp.eye(g.number_of_nodes()) - N.multiply(A).multiply(N)
+        # # Eigenvectors with numpy
+        # EigVal, EigVec = np.linalg.eig(L.toarray())
+        # idx = EigVal.argsort() # increasing order
+        # EigVal, EigVec = EigVal[idx], np.real(EigVec[:,idx])
+        # g.ndata['pos_enc'] = torch.from_numpy(np.abs(EigVec[:,1:pos_enc_dim+1])).float()
 
-    # # Eigenvectors with numpy
-    # EigVal, EigVec = np.linalg.eig(L.toarray())
-    # idx = EigVal.argsort() # increasing order
-    # EigVal, EigVec = EigVal[idx], np.real(EigVec[:,idx])
-    # g.ndata['pos_enc'] = torch.from_numpy(np.abs(EigVec[:,1:pos_enc_dim+1])).float()
+        # Eigenvectors with scipy
+        #EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR')
+        EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR', tol=1e-2)
+        EigVec = EigVec[:, EigVal.argsort()] # increasing order
+        PE = np.real(EigVec[:,1:pos_enc_dim+1])
+        
+        # Saved the position encoding
+        with open(root+f'{dataset_name}_lap-PE.npy', 'wb') as f:
+            np.save(f, PE)
 
-    # Eigenvectors with scipy
-    #EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR')
-    EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR', tol=1e-2)
-    EigVec = EigVec[:, EigVal.argsort()] # increasing order
-    g.ndata['pos_enc'] = torch.from_numpy(np.real(EigVec[:,1:pos_enc_dim+1])).float()
+        print("Laplacian Position encoding saved!")
+
+    else:
+        # Load saved position encoding
+        with open(root+f'{dataset_name}_lap-PE.npy', 'rb') as f:
+            PE = np.load(f)
+
+        print("Successfully loaded the Laplacian Position encoding!")
+    
+    g.ndata['pos_enc'] = torch.from_numpy(PE).float()
 
     return g
 
@@ -48,7 +65,7 @@ def save_edgelist_with_weights(graph, filename):
     dst_list = dst.numpy().tolist()
     weights_list = weights.numpy().tolist()
 
-    with open('/dcs/large/u2034358/'+filename, "w") as file:
+    with open(root+filename, "w") as file:
         for i in range(len(src_list)):
             file.write(f"{src_list[i]} {dst_list[i]} {weights_list[i][0]}\n")
 
@@ -61,7 +78,7 @@ def save_dgl_edgelist(g, filename):
     filename: The path to the output file.
   """
 
-  with open('/dcs/large/u2034358/'+filename, "w") as f:
+  with open(root+filename, "w") as f:
       src, dst = g.edges()
       src = src.numpy()
       dst = dst.numpy()
@@ -99,11 +116,11 @@ class COLLABDataset(Dataset):
         print("[I] Finished loading.")
         print("[I] Data load time: {:.4f}s".format(time.time()-start))
 
-    def _add_positional_encodings(self, pos_enc_dim, hidden_size=None, pos_enc_name='', use_NAPE=True, scale=110000.0, save_adj=False):
+    def _add_positional_encodings(self, pos_enc_dim, hidden_size=None, pos_enc_name='', use_NAPE=True, scale=110000.0, save_adj=False, use_existing=False):
 
         # Graph positional encoding v/ Laplacian eigenvectors
         if not use_NAPE:
-            self.graph = positional_encoding(self.graph, pos_enc_dim)
+            self.graph = positional_encoding(self.graph, pos_enc_dim, self.name, use_existing)
 
         # These are the things I added
         if save_adj:
