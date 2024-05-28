@@ -64,6 +64,8 @@ def combine_plot_line_with_error(data, dataset, folder, exp='eta'):
         x = [1e3, 5e3, 1e4, 2e4, 5e4, 10e4, 15e4, 5e5]
     else:
         x = [1e4, 5e4, 7e4, 1e5, 5e5, 7e5] if exp == 'eta' else [50, 80, 100, 120]
+        # No sign flip: probe the range (1e6, 5e6)
+        # etas=(2e6 2.5e6 3e6 3.5e6 4e6 4.5e6)
 
     mean_train = data[:,0]
     std_train = data[:,1]
