@@ -101,11 +101,11 @@ class WikiCSDataset(torch.utils.data.Dataset):
             print("Done!")
             exit()
         else:
-            if pos_enc_type.lower() == "NAPE":
+            if pos_enc_type.lower() == "NAPE".lower():
                 PE = TT_Pos_Encode(hidden_size, N=self.num_nodes, d=pos_enc_dim, PE_name=pos_enc_name, scale=scale)
                 pos_encode = PE.get_position_encoding()
                 g.ndata['pos_enc'] = pos_encode.float()
-            elif pos_enc_type.lower() == "Sepctral":
+            elif pos_enc_type.lower() == "Sepctral".lower():
                 A = g.adjacency_matrix().to_dense().float().numpy()
                 N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
                 L = sp.eye(g.number_of_nodes()) - N * A * N
@@ -116,13 +116,13 @@ class WikiCSDataset(torch.utils.data.Dataset):
                 idx = EigVal.argsort() # increasing order
                 EigVal, EigVec = EigVal[idx], np.real(EigVec[:,idx])
                 g.ndata['pos_enc'] = torch.from_numpy(EigVec[:,1:pos_enc_dim+1]).float()
-            elif pos_enc_type.lower() == "Learn":
+            elif pos_enc_type.lower() == "Learn".lower():
                 pass
-            elif pos_enc_type.lower() == "Node-embed":
+            elif pos_enc_type.lower() == "Node-embed".lower():
                 pass
-            elif pos_enc_type.lower() == "Dist-enc":
+            elif pos_enc_type.lower() == "Dist-enc".lower():
                 pass
-            elif pos_enc_type.lower() == "Relative-enc":
+            elif pos_enc_type.lower() == "Relative-enc".lower():
                 pass
             else:
                 raise f"{pos_enc_type} is not in the list of position encoding types for this script.\nPlease select from: NAPE, Spectral, Learn, Node-embed, Dist-enc and Relative-enc."

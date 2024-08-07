@@ -130,19 +130,19 @@ class COLLABDataset(Dataset):
             print("Done!")
             exit()
         else:
-            if pos_enc_type.lower() == "NAPE":
+            if pos_enc_type.lower() == "NAPE".lower():
                 PE = TT_Pos_Encode(hidden_size, N=self.num_nodes, d=pos_enc_dim, PE_name=pos_enc_name, scale=scale)
                 pos_encode = PE.get_position_encoding()
                 self.graph.ndata['pos_enc'] = pos_encode.float()
-            elif pos_enc_type.lower() == "Sepctral":
+            elif pos_enc_type.lower() == "Sepctral".lower():
                 self.graph = positional_encoding(self.graph, pos_enc_dim, self.name, use_existing)
-            elif pos_enc_type.lower() == "Learn":
+            elif pos_enc_type.lower() == "Learn".lower():
                 pass
-            elif pos_enc_type.lower() == "Node-embed":
+            elif pos_enc_type.lower() == "Node-embed".lower():
                 pass
-            elif pos_enc_type.lower() == "Dist-enc":
+            elif pos_enc_type.lower() == "Dist-enc".lower():
                 pass
-            elif pos_enc_type.lower() == "Relative-enc":
+            elif pos_enc_type.lower() == "Relative-enc".lower():
                 pass
             else:
                 raise f"{pos_enc_type} is not in the list of position encoding types for this script.\nPlease select from: NAPE, Spectral, Learn, Node-embed, Dist-enc and Relative-enc."
