@@ -116,7 +116,7 @@ class COLLABDataset(Dataset):
         print("[I] Finished loading.")
         print("[I] Data load time: {:.4f}s".format(time.time()-start))
 
-    def _add_positional_encodings(self, pos_enc_dim, hidden_size=None, pos_enc_name='', use_NAPE=True, scale=110000.0, save_adj=False, use_existing=False):
+    def _add_positional_encodings(self, pos_enc_dim, hidden_size=None, pos_enc_name='', pos_enc_type="NAPE", scale=110000.0, save_adj=False, use_existing=False):
 
         # Graph positional encoding v/ Laplacian eigenvectors
         if not use_NAPE:
@@ -130,7 +130,20 @@ class COLLABDataset(Dataset):
             print("Done!")
             exit()
         else:
-            if use_NAPE:
+            if pos_enc_type.lower() == "NAPE":
                 PE = TT_Pos_Encode(hidden_size, N=self.num_nodes, d=pos_enc_dim, PE_name=pos_enc_name, scale=scale)
                 pos_encode = PE.get_position_encoding()
                 self.graph.ndata['pos_enc'] = pos_encode.float()
+            elif pos_enc_type.lower() == "Sepctral":
+                self.graph = positional_encoding(self.graph, pos_enc_dim, self.name, use_existing)
+            elif pos_enc_type.lower() == "Learn":
+                pass
+            elif pos_enc_type.lower() == "Node-embed":
+                pass
+            elif pos_enc_type.lower() == "Dist-enc":
+                pass
+            elif pos_enc_type.lower() == "Relative-enc":
+                pass
+            else:
+                raise f"{pos_enc_type} is not in the list of position encoding types for this script.\nPlease select from: NAPE, Spectral, Learn, Node-embed, Dist-enc and Relative-enc."
+

@@ -86,24 +86,10 @@ class WikiCSDataset(torch.utils.data.Dataset):
 
         print("[I] Finished loading after {:.4f}s".format(time.time()-t0))
 
-    def _add_positional_encodings(self, pos_enc_dim, hidden_size=None, pos_enc_name='', use_NAPE=True, scale=1000.0, save_adj=False):
+    def _add_positional_encodings(self, pos_enc_dim, hidden_size=None, pos_enc_name='', pos_enc_type="NAPE", scale=1000.0, save_adj=False):
 
         # Graph positional encoding v/ Laplacian eigenvectors
         g = self.g
-
-        if not use_NAPE:
-        # Laplacian
-            A = g.adjacency_matrix().to_dense().float().numpy()
-            N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
-            L = sp.eye(g.number_of_nodes()) - N * A * N
-
-            # Eigenvectors with numpy
-            # EigVal, EigVec = np.linalg.eig(L.toarray())
-            EigVal, EigVec = np.linalg.eig(L)
-            idx = EigVal.argsort() # increasing order
-            EigVal, EigVec = EigVal[idx], np.real(EigVec[:,idx])
-
-            g.ndata['pos_enc'] = torch.from_numpy(EigVec[:,1:pos_enc_dim+1]).float()
 
         # These are the things I added
         if save_adj:
@@ -115,9 +101,31 @@ class WikiCSDataset(torch.utils.data.Dataset):
             print("Done!")
             exit()
         else:
-            if use_NAPE:
+            if pos_enc_type.lower() == "NAPE":
                 PE = TT_Pos_Encode(hidden_size, N=self.num_nodes, d=pos_enc_dim, PE_name=pos_enc_name, scale=scale)
                 pos_encode = PE.get_position_encoding()
                 g.ndata['pos_enc'] = pos_encode.float()
+            elif pos_enc_type.lower() == "Sepctral":
+                A = g.adjacency_matrix().to_dense().float().numpy()
+                N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+                L = sp.eye(g.number_of_nodes()) - N * A * N
+
+                # Eigenvectors with numpy
+                # EigVal, EigVec = np.linalg.eig(L.toarray())
+                EigVal, EigVec = np.linalg.eig(L)
+                idx = EigVal.argsort() # increasing order
+                EigVal, EigVec = EigVal[idx], np.real(EigVec[:,idx])
+                g.ndata['pos_enc'] = torch.from_numpy(EigVec[:,1:pos_enc_dim+1]).float()
+            elif pos_enc_type.lower() == "Learn":
+                pass
+            elif pos_enc_type.lower() == "Node-embed":
+                pass
+            elif pos_enc_type.lower() == "Dist-enc":
+                pass
+            elif pos_enc_type.lower() == "Relative-enc":
+                pass
+            else:
+                raise f"{pos_enc_type} is not in the list of position encoding types for this script.\nPlease select from: NAPE, Spectral, Learn, Node-embed, Dist-enc and Relative-enc."
+
 
         self.g = g
