@@ -101,7 +101,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, save_file_params
             dataset._add_positional_encodings(net_params['pos_enc_dim'],
                                                 net_params['hidden_dim'],
                                                 net_params['pos_enc_name'],
-                                                net_params['use_NAPE'],float(net_params['scale']),
+                                                net_params['pos_enc_type'],float(net_params['scale']),
                                                 # save_adj=True,
                                                 use_existing=False)
             print('Time PE:',time.time()-t0)
@@ -179,7 +179,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, save_file_params
 
                 epoch_train_loss, optimizer = train_epoch(model, optimizer, device, graph, train_edges,
                                                             params['batch_size'], epoch, monet_pseudo,
-                                                            net_params['use_NAPE'])
+                                                            net_params['pos_enc_type'])
 
                 epoch_train_hits, epoch_val_hits, epoch_test_hits = evaluate_network(
                     model, device, graph, train_edges, val_edges, val_edges_neg, test_edges, test_edges_neg, evaluator, params['batch_size'], epoch, monet_pseudo)
