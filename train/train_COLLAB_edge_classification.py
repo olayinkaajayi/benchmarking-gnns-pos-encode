@@ -13,7 +13,7 @@ from tqdm import tqdm
 """
     For GCNs
 """
-def train_epoch_sparse(model, optimizer, device, graph, train_edges, batch_size, epoch, monet_pseudo=None, use_NAPE=False):
+def train_epoch_sparse(model, optimizer, device, graph, train_edges, batch_size, epoch, monet_pseudo=None, pos_enc_type="NAPE"):
 
     model.train()
 
@@ -35,7 +35,7 @@ def train_epoch_sparse(model, optimizer, device, graph, train_edges, batch_size,
         # Compute node embeddings
         try:
             x_pos_enc = graph.ndata['pos_enc'].to(device)
-            if use_NAPE:
+            if pos_enc_type.lower() == "NAPE".lower():
                 h = model(graph, x, e, x_pos_enc)
             else:
                 sign_flip = torch.rand(x_pos_enc.size(1)).to(device)

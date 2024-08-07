@@ -109,7 +109,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, save_file_params
             dataset._add_positional_encodings(net_params['pos_enc_dim'],
                                                 net_params['hidden_dim'],
                                                 net_params['pos_enc_name'],
-                                                net_params['use_NAPE'],float(net_params['scale']))
+                                                net_params['pos_enc_type'],float(net_params['scale']))
                                                 #save_adj=True) #set as True to get adjacency matrix
             print('Time PE:',time.time()-t0)
 
@@ -178,7 +178,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, save_file_params
 
                     epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, graph,
                                                                                 node_feat, edge_feat, train_mask,
-                                                                                labels, epoch, net_params['use_NAPE'])
+                                                                                labels, epoch, net_params['pos_enc_type'])
 
                     epoch_val_loss, epoch_val_acc = evaluate_network(model, optimizer, device, graph, node_feat, edge_feat, val_mask, labels, epoch)
                     _, epoch_test_acc = evaluate_network(model, optimizer, device, graph, node_feat, edge_feat, test_mask, labels, epoch)

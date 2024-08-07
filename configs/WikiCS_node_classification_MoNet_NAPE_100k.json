@@ -35,7 +35,7 @@
         "pos_enc": true,
         "pos_enc_dim": 22,
         "pos_enc_name": "checkpoint_scaledNAPE_cpu.pt",
-        "use_NAPE": true,
+        "pos_enc_type": "NAPE",
         "scale": 1e3
     },
 

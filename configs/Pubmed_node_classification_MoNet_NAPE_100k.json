@@ -35,7 +35,7 @@
         "pos_enc": true,
         "pos_enc_dim": 24,
         "pos_enc_name": "Pubmed_scaledNAPE_cpu.pt",
-        "use_NAPE": true,
+        "pos_enc_type": "NAPE",
         "scale": 11e4
     },
 

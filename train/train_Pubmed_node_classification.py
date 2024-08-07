@@ -10,7 +10,7 @@ import dgl
 from train.metrics import accuracy_Pubmed as accuracy
 
 
-def train_epoch(model, optimizer, device, graph, node_feat, edge_feat, train_mask, labels, epoch, use_NAPE=False):
+def train_epoch(model, optimizer, device, graph, node_feat, edge_feat, train_mask, labels, epoch, pos_enc_type="NAPE"):
 
     model.train()
     epoch_loss = 0
@@ -20,7 +20,7 @@ def train_epoch(model, optimizer, device, graph, node_feat, edge_feat, train_mas
 
     try:
         pos_enc = graph.ndata['pos_enc'].to(device)
-        if use_NAPE:
+        if pos_enc_type.lower() == "NAPE".lower():
             logits = model.forward(graph, node_feat, edge_feat, pos_enc)
         else:
             sign_flip = torch.rand(pos_enc.size(1)).to(device)
