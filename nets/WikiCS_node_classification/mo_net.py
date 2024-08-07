@@ -33,8 +33,8 @@ class MoNet(nn.Module):
         self.device = net_params['device']
         self.n_classes = n_classes
         self.pos_enc = net_params['pos_enc']
-        self.use_NAPE = net_params['use_NAPE']
-        if self.pos_enc and (not self.use_NAPE):
+        self.proj_pos_enc = net_params['pos_enc_type'] in ["Spectral"]
+        if self.pos_enc and self.proj_pos_enc:
             pos_enc_dim = net_params['pos_enc_dim']
             self.embedding_pos_enc = nn.Linear(pos_enc_dim, hidden_dim)
 
@@ -58,16 +58,22 @@ class MoNet(nn.Module):
 
         self.MLP_layer = MLPReadout(out_dim, n_classes)
 
-    def forward(self, g, h, e, h_pos_enc=None):
-        h = self.embedding_h(h)
 
+    def apply_pos_enc(self, h):
+
+        if self.proj_pos_enc:
+            h_pos_enc = self.embedding_pos_enc(h_pos_enc.float())
+        else:
+            h_pos_enc = h_pos_enc.float()
+
+        return h + h_pos_enc
+
+
+    def forward(self, g, h, e, h_pos_enc=None):
+
+        h = self.embedding_h(h)
         if self.pos_enc:
-            if self.use_NAPE:
-                h_pos_enc = h_pos_enc.float()
-            else:
-                h_pos_enc = self.embedding_pos_enc(h_pos_enc.float())
-                
-            h = h + h_pos_enc
+            h = self.apply_pos_enc(h)
 
         # computing the 'pseudo' named tensor which depends on node degrees
         g.ndata['deg'] = g.in_degrees()
