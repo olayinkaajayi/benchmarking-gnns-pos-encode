@@ -104,6 +104,11 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, save_file_params
                                                 net_params['pos_enc_type'],float(net_params['scale']),
                                                 # save_adj=True,
                                                 use_existing=False)
+            
+            if net_params['pos_enc_type'].lower() == "learn":
+                # This would be used to set the learnable parameter size
+                net_params['num_nodes'] = dataset.num_nodes
+            
             print('Time PE:',time.time()-t0)
             # if not net_params['use_NAPE']:
             #     # We enforce this only to get the time taken for the Laplacian to be computed

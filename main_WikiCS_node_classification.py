@@ -111,6 +111,11 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, save_file_params
                                                 net_params['pos_enc_name'],
                                                 net_params['pos_enc_type'],float(net_params['scale']))
                                                 #save_adj=True) #set as True to get adjacency matrix
+            
+            if net_params['pos_enc_type'].lower() == "learn":
+                # This would be used to set the learnable parameter size
+                net_params['num_nodes'] = dataset.num_nodes
+            
             print('Time PE:',time.time()-t0)
 
     root_log_dir, root_ckpt_dir, write_file_name, write_config_file = dirs
