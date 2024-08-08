@@ -158,7 +158,7 @@ class PubmedDataset(torch.utils.data.Dataset):
 
                 g.ndata['pos_enc'] = torch.from_numpy(EigVec[:,1:pos_enc_dim+1]).float()
             elif pos_enc_type.lower() == "Learn".lower():
-                pass
+                g.ndata['pos_enc'] = None
             elif pos_enc_type.lower() == "Node-embed".lower():
                 pass
             elif pos_enc_type.lower() == "Dist-enc".lower():

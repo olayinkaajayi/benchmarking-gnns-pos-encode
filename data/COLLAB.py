@@ -137,7 +137,7 @@ class COLLABDataset(Dataset):
             elif pos_enc_type.lower() == "Sepctral".lower():
                 self.graph = positional_encoding(self.graph, pos_enc_dim, self.name, use_existing)
             elif pos_enc_type.lower() == "Learn".lower():
-                pass
+                g.ndata['pos_enc'] = None
             elif pos_enc_type.lower() == "Node-embed".lower():
                 pass
             elif pos_enc_type.lower() == "Dist-enc".lower():
