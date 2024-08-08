@@ -28,10 +28,13 @@ class GatedGCNNet(nn.Module):
         self.edge_feat = net_params['edge_feat']
         self.device = net_params['device']
         self.pos_enc = net_params['pos_enc']
-        self.proj_pos_enc = net_params['pos_enc_type'] in ["Spectral"]
+        self.proj_pos_enc = net_params['pos_enc_type'] in ["Spectral", "Learn"]
         if self.pos_enc and self.proj_pos_enc:
             pos_enc_dim = net_params['pos_enc_dim']
-            self.embedding_pos_enc = nn.Linear(pos_enc_dim, hidden_dim)
+            if net_params['pos_enc_type'] == "Learn":
+                self.learn_param = nn.Parameters(torch.randn(net_params['num_nodes'],hidden_dim)) 
+            else:
+                self.embed = nn.Linear(pos_enc_dim, hidden_dim)
 
         self.layer_type = {
             "edgereprfeat": GatedGCNLayer,
@@ -47,10 +50,18 @@ class GatedGCNNet(nn.Module):
 
         self.MLP_layer = MLPReadout(2*out_dim, 1)
 
-    def apply_pos_enc(self, h):
+    def embedding_pos_enc(self, pos_enc):
+        """Determines if we use a learnable parameter or not"""
+        if pos_enc is None:
+            return self.learn_param
+        else:
+            return self.embed(pos_enc.float())
+
+
+    def apply_pos_enc(self, h, h_pos_enc):
 
         if self.proj_pos_enc:
-            h_pos_enc = self.embedding_pos_enc(h_pos_enc.float())
+            h_pos_enc = self.embedding_pos_enc(h_pos_enc)
         else:
             h_pos_enc = h_pos_enc.float()
 
@@ -61,7 +72,7 @@ class GatedGCNNet(nn.Module):
 
         h = self.embedding_h(h.float())
         if self.pos_enc:
-            h = self.apply_pos_enc(h)
+            h = self.apply_pos_enc(h, h_pos_enc)
             
         if not self.edge_feat:
             e = torch.ones_like(e).to(self.device)
