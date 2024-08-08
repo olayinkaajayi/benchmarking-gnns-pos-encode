@@ -34,8 +34,8 @@ def train_epoch_sparse(model, optimizer, device, graph, train_edges, batch_size,
 
         # Compute node embeddings
         try:
-            x_pos_enc = graph.ndata['pos_enc'].to(device)
-            if pos_enc_type.lower() == "NAPE".lower():
+            pos_enc = graph.ndata['pos_enc'].to(device) if graph.ndata['pos_enc'] is not None else graph.ndata['pos_enc']
+            if pos_enc_type.lower() in ["nape", "learn"]:
                 h = model(graph, x, e, x_pos_enc)
             else:
                 sign_flip = torch.rand(x_pos_enc.size(1)).to(device)
