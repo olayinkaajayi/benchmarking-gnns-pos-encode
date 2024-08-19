@@ -37,7 +37,7 @@ class MoNet(nn.Module):
         if self.pos_enc and self.proj_pos_enc:
             pos_enc_dim = net_params['pos_enc_dim']
             if net_params['pos_enc_type'] == "Learn":
-                self.learn_param = nn.Parameters(torch.randn(net_params['num_nodes'],hidden_dim)) 
+                self.learn_param = nn.Parameter(torch.randn(net_params['num_nodes'],hidden_dim)) 
             else:
                 self.embed = nn.Linear(pos_enc_dim, hidden_dim)
 
