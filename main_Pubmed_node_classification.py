@@ -125,6 +125,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, save_file_params
     val_masks = dataset.val_masks
     test_mask = dataset.test_mask.to(device)
     labels = dataset.labels.to(device)
+    net_params['total_param'] = view_model_param(MODEL_NAME, net_params)
 
 
 
@@ -335,6 +336,7 @@ def main():
     parser.add_argument('--max_time', help="Please give a value for max_time")
     parser.add_argument('--pos_enc_dim', help="Please give a value for pos_enc_dim")
     parser.add_argument('--pos_enc', help="Please give a value for pos_enc")
+    parser.add_argument('--pos_enc_type', help="One of NAPE, Spectral, Learn, Node-embed, Dist-enc and Relative-enc.")
     args = parser.parse_args()
     with open(args.config) as f:
         config = json.load(f)
@@ -436,6 +438,8 @@ def main():
         net_params['pos_enc'] = True if args.pos_enc=='True' else False
     if args.pos_enc_dim is not None:
         net_params['pos_enc_dim'] = int(args.pos_enc_dim)
+    if args.pos_enc_type is not None:
+        net_params['pos_enc_type'] = args.pos_enc_type
 
     # SBM
     net_params['in_dim'] = dataset.n_feats
@@ -453,7 +457,6 @@ def main():
     if not os.path.exists(out_dir + 'configs'):
         os.makedirs(out_dir + 'configs')
 
-    net_params['total_param'] = view_model_param(MODEL_NAME, net_params)
     train_val_pipeline(MODEL_NAME, dataset, params, net_params, save_file_params, dirs)
 
 
