@@ -34,7 +34,7 @@ def get_position_encoding(DATASET_NAME, num_nodes):
         s_dict = dict(sorted(pos_enc_dict.items()))
         pos_enc = list(s_dict.values())
 
-        return torch.tensor(pos_enc)
+    return torch.tensor(pos_enc)
 
 
 def get_position_encoding(DATASET_NAME, num_nodes, num_hops):
