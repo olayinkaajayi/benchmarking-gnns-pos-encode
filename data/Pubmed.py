@@ -161,7 +161,7 @@ class PubmedDataset(torch.utils.data.Dataset):
                 g.ndata['pos_enc'] = torch.from_numpy(EigVec[:,1:pos_enc_dim+1]).float()
 
             elif pos_enc_type.lower() == "Learn".lower():
-                g.ndata['pos_enc'] = None
+                pass # It will raise error and the exception would be caught
 
             elif pos_enc_type.lower() == "Node-embed".lower():
                 g.ndata['pos_enc'] = get_position_encoding(self.name, self.num_nodes)

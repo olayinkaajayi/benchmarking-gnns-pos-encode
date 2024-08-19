@@ -119,10 +119,6 @@ class COLLABDataset(Dataset):
 
     def _add_positional_encodings(self, pos_enc_dim, hidden_size=None, pos_enc_name='', pos_enc_type="NAPE", scale=110000.0, save_adj=False, use_existing=False):
 
-        # Graph positional encoding v/ Laplacian eigenvectors
-        if not use_NAPE:
-            self.graph = positional_encoding(self.graph, pos_enc_dim, self.name, use_existing)
-
         # These are the things I added
         if save_adj:
             print("Saving edgelist for ogb-COLLAB dataset...")
@@ -140,7 +136,7 @@ class COLLABDataset(Dataset):
                 self.graph = positional_encoding(self.graph, pos_enc_dim, self.name, use_existing)
 
             elif pos_enc_type.lower() == "Learn".lower():
-                g.ndata['pos_enc'] = None
+                pass # It will raise error and the exception would be caught
 
             elif pos_enc_type.lower() == "Node-embed".lower():
                 g.ndata['pos_enc'] = get_position_encoding(self.name, self.num_nodes)
