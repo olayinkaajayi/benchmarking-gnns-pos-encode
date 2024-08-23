@@ -337,12 +337,15 @@ def main():
     parser.add_argument('--pos_enc_dim', help="Please give a value for pos_enc_dim")
     parser.add_argument('--pos_enc', help="Please give a value for pos_enc")
     parser.add_argument('--pos_enc_type', help="One of NAPE, Spectral, Learn, Node-embed, Dist-enc and Relative-enc.")
+    parser.add_argument('--save_folder', help="The folder to save the file holding the metrics.")
     args = parser.parse_args()
     with open(args.config) as f:
         config = json.load(f)
 
     # parameters to determine where to save the computed metrics
     save_file_params = config['save_file']
+    if args.save_folder is not None:
+        save_file_params['folder'] = args.save_folder
 
     # device
     if args.gpu_id is not None:
