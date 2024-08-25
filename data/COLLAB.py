@@ -9,7 +9,7 @@ from scipy import sparse as sp
 import numpy as np
 
 from train.NAPE_modules.trans_pos_encode import TT_Pos_Encode
-from .data import *
+from .pos_enc import get_position_encoding
 
 root = '/dcs/large/u2034358/'
 
@@ -139,10 +139,10 @@ class COLLABDataset(Dataset):
                 pass # It will raise error and the exception would be caught
 
             elif pos_enc_type.lower() == "Node-embed".lower():
-                g.ndata['pos_enc'] = get_position_encoding(self.name, self.num_nodes)
+                self.graph.ndata['pos_enc'] = get_position_encoding(self.name, self.num_nodes)
 
             elif pos_enc_type.lower() == "Dist-enc".lower():
-                g.ndata['pos_enc'] = get_position_encoding(self.name, self.num_nodes, num_hops)
+                self.graph.ndata['pos_enc'] = get_position_encoding(self.name, self.num_nodes, num_hops)
 
             elif pos_enc_type.lower() == "Relative-enc".lower():
                 pass

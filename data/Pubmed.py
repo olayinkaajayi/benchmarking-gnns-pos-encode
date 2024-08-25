@@ -12,7 +12,7 @@ import networkx as nx
 from scipy import sparse as sp
 
 from train.NAPE_modules.trans_pos_encode import TT_Pos_Encode
-from .data import *
+from .pos_enc import get_position_encoding
 
 import itertools
 
@@ -164,7 +164,7 @@ class PubmedDataset(torch.utils.data.Dataset):
                 pass # It will raise error and the exception would be caught
 
             elif pos_enc_type.lower() == "Node-embed".lower():
-                g.ndata['pos_enc'] = get_position_encoding(self.name, self.num_nodes)
+                g.ndata['pos_enc'] = get_position_encoding(DATASET_NAME=self.name, num_nodes=self.num_nodes)
 
             elif pos_enc_type.lower() == "Dist-enc".lower():
                 g.ndata['pos_enc'] = get_position_encoding(self.name, self.num_nodes, num_hops)

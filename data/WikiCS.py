@@ -11,7 +11,7 @@ import networkx as nx
 from scipy import sparse as sp
 
 from train.NAPE_modules.trans_pos_encode import TT_Pos_Encode
-from .data import *
+from .pos_enc import get_position_encoding
 
 import itertools
 
