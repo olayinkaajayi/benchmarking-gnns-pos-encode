@@ -28,7 +28,7 @@ class GatedGCNNet(nn.Module):
         self.edge_feat = net_params['edge_feat']
         self.device = net_params['device']
         self.pos_enc = net_params['pos_enc']
-        self.proj_pos_enc = net_params['pos_enc_type'] in ["Spectral", "Learn"]
+        self.proj_pos_enc = net_params['pos_enc_type'] in ["Spectral", "Learn", "Node-embed"]
         if self.pos_enc and self.proj_pos_enc:
             pos_enc_dim = net_params['pos_enc_dim']
             if net_params['pos_enc_type'] == "Learn":
