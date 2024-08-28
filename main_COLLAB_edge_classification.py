@@ -98,12 +98,8 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, save_file_params
     if MODEL_NAME in ['GatedGCN']:
         if net_params['pos_enc']:
             print("[!] Adding graph positional encoding",net_params['pos_enc_dim'])
-            dataset._add_positional_encodings(net_params['pos_enc_dim'],
-                                                net_params['hidden_dim'],
-                                                net_params['pos_enc_name'],
-                                                net_params['pos_enc_type'],float(net_params['scale']),
-                                                # save_adj=True,
-                                                use_existing=False)
+            dataset._add_positional_encodings(net_params, save_adj=False, #set as True to get adjacency matrix
+                                                    use_existing=False) #set as True to use saved laplacian
             
             if net_params['pos_enc_type'].lower() == "learn":
                 # This would be used to set the learnable parameter size
@@ -333,6 +329,7 @@ def main():
     parser.add_argument('--pos_enc', help="Please give a value for pos_enc")
     parser.add_argument('--save_folder', help="The folder to save the file holding the metrics.")
     parser.add_argument('--pos_enc_type', help="One of NAPE, Spectral, Learn, Node-embed, Dist-enc and Relative-enc.")
+    parser.add_argument('--num_hops', help="Number of hops for distance encoding position encoding.")
     args = parser.parse_args()
     with open(args.config) as f:
         config = json.load(f)
@@ -441,6 +438,8 @@ def main():
         net_params['pos_enc_dim'] = int(args.pos_enc_dim)
     if args.pos_enc_type is not None:
         net_params['pos_enc_type'] = args.pos_enc_type
+    if args.num_hops is not None:
+        net_params['num_hops'] = int(args.num_hops)
 
 
 
