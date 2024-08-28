@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import torch
 
 root = '/dcs/large/u2034358/'
@@ -20,15 +21,34 @@ def get_position_encoding(DATASET_NAME, num_nodes, num_hops=None):
     if num_hops is None:
         return get_position_encoding2(DATASET_NAME, num_nodes)
 
-    name = DATASET_NAME.lower() if DATASET_NAME in ['OGB-COLLAB'] else DATASET_NAME
-    name = f'{name}Dataset' if name.lower() in ['wikics'] else name
+    file_tensor = f"{root}/adj_{DATASET_NAME}^{num_hops}.pt"
 
-    with open(f'{root}{name}.edgelist', 'r') as f:
+    if os.path.exists(file_tensor):
+        print(f"Loading A^{num_hops} tensor file...")
+        adjacency = torch.load(file_tensor)
+    else:
 
-        edgelist = f.read()
-        adjacency = [[1 if [i, j] in set(map(tuple, edgelist)) else 0 for j in range(num_nodes)] for i in range(num_nodes)]
+        name = DATASET_NAME.lower() if DATASET_NAME in ['OGBL-COLLAB'] else DATASET_NAME
+        name = f'{name}Dataset' if name.lower() in ['wikics'] else name
 
-    adjacency = torch.tensor(adjacency) #consider passing to GPU
-    adjacency = torch.linalg.matrix_power(adjacency, num_hops)
+        with open(f'{root}{name}.edgelist', 'r') as f:
+
+            edgelist = f.read().split('\n')
+            
+        adjacency = np.zeros((num_nodes,num_nodes))
+        for ent in edgelist:
+            try:
+                a,b = ent.split(' ')
+                adjacency[int(a), int(b)] = 1.0
+            except ValueError:
+                pass
+
+        adjacency = torch.from_numpy(adjacency) #consider passing to GPU
+        print(f"Computing A^{num_hops} ...")
+        adjacency = torch.linalg.matrix_power(adjacency, num_hops)
+
+        adjacency = 1./(adjacency + 1.0)
+
+        torch.save(adjacency,file_tensor)
 
     return adjacency
