@@ -20,7 +20,7 @@ def train_epoch(model, optimizer, device, graph, node_feat, edge_feat, train_mas
 
     try:
         pos_enc = graph.ndata['pos_enc'].to(device)
-        if pos_enc_type.lower() in ["nape", "spectral", "node-embed"]:
+        if pos_enc_type.lower() in ["nape", "spectral", "node-embed", "dist-enc"]:
             logits = model.forward(graph, node_feat, edge_feat, pos_enc)
         else:
             sign_flip = torch.rand(pos_enc.size(1)).to(device)
