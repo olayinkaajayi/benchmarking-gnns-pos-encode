@@ -87,7 +87,12 @@ class WikiCSDataset(torch.utils.data.Dataset):
 
         print("[I] Finished loading after {:.4f}s".format(time.time()-t0))
 
-    def _add_positional_encodings(self, pos_enc_dim, hidden_size=None, pos_enc_name='', pos_enc_type="NAPE", scale=1000.0, save_adj=False):
+    def _add_positional_encodings(self, net_params, save_adj=False):
+
+        # Parameter list:
+        pos_enc_dim, hidden_size, pos_enc_name = net_params['pos_enc_dim'], net_params['hidden_dim'], net_params['pos_enc_name']
+        pos_enc_type, scale, num_hops = net_params['pos_enc_type'], float(net_params['scale']), net_params['num_hops']
+        
 
         # Graph positional encoding v/ Laplacian eigenvectors
         g = self.g
@@ -97,7 +102,7 @@ class WikiCSDataset(torch.utils.data.Dataset):
             A = g.adjacency_matrix().to_dense().float().numpy()
             filename = 'WikiCSDataset_adj.npy'
             print("Saving adjacency matrix for WikiCSDataset...")
-            with open('/dcs/large/u2034358/'+filename,'wb') as f:
+            with open(root+filename,'wb') as f:
                 np.save(f,np.array(A))
             print("Done!")
             exit()
@@ -127,6 +132,7 @@ class WikiCSDataset(torch.utils.data.Dataset):
 
             elif pos_enc_type.lower() == "Dist-enc".lower():
                 g.ndata['pos_enc'] = get_position_encoding(self.name, self.num_nodes, num_hops)
+                net_params["pos_enc_dim"] = self.num_nodes
 
             elif pos_enc_type.lower() == "Relative-enc".lower():
                 pass

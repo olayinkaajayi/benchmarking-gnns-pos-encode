@@ -117,7 +117,11 @@ class COLLABDataset(Dataset):
         print("[I] Finished loading.")
         print("[I] Data load time: {:.4f}s".format(time.time()-start))
 
-    def _add_positional_encodings(self, pos_enc_dim, hidden_size=None, pos_enc_name='', pos_enc_type="NAPE", scale=110000.0, save_adj=False, use_existing=False):
+    def _add_positional_encodings(self, net_params, save_adj=False, use_existing=False):
+
+        # Parameter list:
+        pos_enc_dim, hidden_size, pos_enc_name = net_params['pos_enc_dim'], net_params['hidden_dim'], net_params['pos_enc_name']
+        pos_enc_type, scale, num_hops = net_params['pos_enc_type'], float(net_params['scale']), net_params['num_hops']
 
         # These are the things I added
         if save_adj:
@@ -143,6 +147,7 @@ class COLLABDataset(Dataset):
 
             elif pos_enc_type.lower() == "Dist-enc".lower():
                 self.graph.ndata['pos_enc'] = get_position_encoding(self.name, self.num_nodes, num_hops)
+                net_params["pos_enc_dim"] = self.num_nodes
 
             elif pos_enc_type.lower() == "Relative-enc".lower():
                 pass
