@@ -128,7 +128,7 @@ def main(args):
     filename_train = os.path.join(args.folder,args.best_train_filename)
     filename_test = os.path.join(args.folder,args.best_test_filename)
 
-    scores_train = read_csv(filename=filename_train, matrix=args.dataset=="WikiCS")
+    scores_train = read_csv(filename=filename_train, matrix=args.dataset!='OGBL-COLLAB')
     if isinstance(scores_train, np.ndarray):
         avg_train = np.mean(scores_train[:,0])
         # Note that for the WikiCS dataset, the algorithm is ran for 20 train-test split (cross-validation).
@@ -141,7 +141,7 @@ def main(args):
 
     print(f"Average (train) Best Score for {args.dataset} is {avg_train:.3f}+/-{std_train:.3f}")
 
-    scores_test = read_csv(filename=filename_test, matrix=args.dataset=="WikiCS")
+    scores_test = read_csv(filename=filename_test, matrix=args.dataset!='OGBL-COLLAB')
     if isinstance(scores_train, np.ndarray):
         avg_test = np.mean(scores_test[:,0])
         # Note that for the WikiCS dataset, the algorithm is ran for 20 train-test split (cross-validation).
@@ -154,7 +154,7 @@ def main(args):
     print(f"Average (test) Best Score for {args.dataset} is {avg_test:.3f}+/-{std_test:.3f}\n")
 
     if not args.simulation:
-        with open(os.path.join(args.folder,f'Avg_metric_{args.dataset}.txt'),'w') as f:
+        with open(os.path.join(args.folder,f'Avg_metric_{args.dataset}_{args.type}.txt'),'w') as f:
             f.write(f"Statistics for Dataset: {args.dataset}\n\n")
             f.write(f"Average(train)={avg_train:.3f}\n")
             f.write(f"SD(train)={std_train:.3f}\n")
@@ -190,6 +190,8 @@ if __name__ == '__main__':
                         help='tells if we should go ahead to create plot. (default: False)')
     parser.add_argument('-c','--combine', action='store_true', default=False,
                         help='tells if we should combine plots for both split of the dataset. (default: False)')
+    parser.add_argument('--type', default='learn',
+                        help="The type of position encoding used.")
 
     args = parser.parse_args()
 
