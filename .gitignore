@@ -21,5 +21,6 @@ data/WikiCS/*.json
 *.sbatch
 *.sh
 *.png
+*.txt
 
 scripts/StatisticalResults/wikics.ipynb
